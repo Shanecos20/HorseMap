@@ -49,8 +49,6 @@
       max-width: 320px;
       white-space: normal;   /* allow wrapping */
       word-wrap: break-word; /* break long words */
-      /* smooth animation */
-      animation: tooltipFadeIn 0.25s ease-out forwards;
       transition: opacity 0.2s ease;
     }
 
@@ -112,7 +110,8 @@
     }
 
     .panel-list.open {
-      max-height: 400px;
+      max-height: 60vh;
+      overflow-y: auto;
     }
 
     .panel-list li {
@@ -162,39 +161,41 @@
   <script>
     // ── Location Data ────────────────────────────────────────────────
     const locations = [
-      {
-        name: "Eyre Square",
-        description: "Galway's central public square and park, a popular meeting point in the heart of the city.",
-        lat: 53.2745,
-        lng: -9.0490
-      },
-      {
-        name: "Spanish Arch",
-        description: "A 16th-century archway that once protected merchant ships unloading goods from Spain.",
-        lat: 53.2698,
-        lng: -9.0538
-      },
-      {
-        name: "Galway Cathedral",
-        description: "The Cathedral of Our Lady Assumed into Heaven and St Nicholas — one of Europe's youngest stone cathedrals.",
-        lat: 53.2730,
-        lng: -9.0590
-      }
+      { name: "Leisure Horse Ireland",        lat: 53.253387514470845, lng: -9.227995593306996,  type: "Organization" },
+      { name: "West Coast Vets",              lat: 53.25716877298111, lng: -9.155501506470095,  type: "Vet" },
+      { name: "ARK Vets",                     lat: 53.27137047598495, lng: -9.065654506425775,  type: "Vet" },
+      { name: "Moycullen Riding Centre",      lat: 53.30281309774886, lng: -9.15971129386534,  type: "Riding School" },
+      { name: "Kevin Reilly Connemara Ponies", lat: 53.3064664772366, lng: -9.111936355382252, type: "Breeder" },
+      { name: "Bushypark Vets",               lat: 53.287009472120346, lng: -9.068451701365404,  type: "Vet" },
+      { name: "Feeneys Equestrian Centre",    lat: 53.28814371799418, lng: -9.109934979047924,  type: "Riding School" },
+      { name: "Glenina Vets",                 lat: 53.27925394490098, lng: -9.020522207941411,  type: "Vet" },
+      { name: "The Equine Warehouse",         lat: 53.363205079606495, lng: -8.991613533749705,  type: "Retail" },
+      { name: "Galway Bay Stud",              lat: 53.282817508590924, lng: -8.966883719016463,  type: "Stud" },
+      { name: "Duffys Equestrian",            lat: 53.32211143826494, lng: -8.969542571742553,  type: "Equestrian Centre" },
+      { name: "Mullins Sport Horses",         lat: 53.32020396336472, lng: -8.94365645919947,  type: "Sport Horses" },
+      { name: "Galway Equestrian Centre",     lat: 53.33156632095057, lng: -8.828536388103538,  type: "Equestrian Centre" },
+      { name: "Hadley Sport Horses",          lat: 53.20348657621704, lng: -8.671272033026241,  type: "Sport Horses" },
+      { name: "Hadley Transport",             lat: 53.1976935433153, lng: -8.666703020497101,  type: "Transport" },
+      { name: "Eves Riding Centre",           lat: 53.48446272749979, lng: -8.845967521235112,  type: "Riding School" },
+      { name: "J.Naughton Equine",            lat: 53.325235081729986, lng: -8.741370093524267,  type: "Services" },
+      { name: "CGH Blazers",                  lat: 53.2500, lng: -8.6000,  type: "Hunt" },
+      { name: "Horses in Ireland (An Sibin)", lat: 52.98042262163658, lng: -8.404160110395503,  type: "Riding Centre" },
+      { name: "Connemara Pony Sales",         lat: 53.48802995025841, lng: -10.008181704087969, type: "Sales" },
+      { name: "Ower Equestrian",              lat: 53.3868607156168, lng: -9.163845244794105,  type: "Equestrian Centre" },
+      { name: "GAMUT Stud (Rosshill Farm)",   lat: 53.269608451275495, lng: -8.986848473284798,  type: "Stud" },
+      { name: "Parkroe Stud",                 lat: 53.246762117613756, lng: -8.74947078619015,  type: "Stud" },
+      { name: "Slieve Aughty Equestrian",     lat: 53.13415068066143, lng: -8.47280329463522,  type: "Equestrian Centre" },
+      { name: "Horses Connect Galway",        lat: 53.29600868111012, lng: -9.09741832250517,  type: "Therapy/Training" },
+      { name: "Marley Stables",               lat: 53.542279774715595, lng: -8.836894117105446,  type: "Stables" },
+      { name: "Callatra Stables",             lat: 53.12052739517278, lng: -8.467486211170202,  type: "Stables" },
+      { name: "Glennamaddy Equestrian Centre", lat: 53.596314144044285, lng: -8.56827914574696, type: "Equestrian Centre" }
     ];
-
-    // ── County Galway bounding box ───────────────────────────────────
-    // SW corner → NE corner (includes Aran Islands & east to Ballinasloe)
-    const galwayBounds = L.latLngBounds(
-      [52.96, -10.68],   // south-west
-      [53.63,  -7.99]    // north-east
-    );
 
     // ── Map Initialisation ───────────────────────────────────────────
     const map = L.map("map", {
-      center: [53.2707, -9.0568],
-      zoom: 14,
+      center: [53.30, -8.85],
+      zoom: 10,
       minZoom: 9,             // don't zoom out past the county
-      maxBounds: galwayBounds,
       maxBoundsViscosity: 1.0 // hard stop at the edges
     });
 
@@ -213,7 +214,7 @@
 
       const tooltipContent =
         '<div class="tooltip-name">' + loc.name + '</div>' +
-        '<div class="tooltip-desc">' + loc.description + '</div>';
+        '<div class="tooltip-desc">' + loc.type + '</div>';
 
       marker.bindTooltip(tooltipContent, {
         direction: "top",
