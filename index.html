@@ -149,6 +149,32 @@
       color: #111;
       font-weight: 600;
     }
+
+    /* ── Mobile: compact & collapsed by default ───────────────────── */
+    @media (max-width: 600px) {
+      .location-panel {
+        width: 160px;
+        top: 8px;
+        right: 8px;
+      }
+
+      .panel-header {
+        padding: 6px 10px;
+      }
+
+      .panel-header .panel-title {
+        font-size: 12px;
+      }
+
+      .panel-list.open {
+        max-height: 40vh;
+      }
+
+      .panel-list li {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -264,6 +290,12 @@
 
       panelList.appendChild(li);
     });
+
+    // Start collapsed on small screens so it doesn't cover the map
+    if (window.innerWidth <= 600) {
+      panelList.classList.remove("open");
+      panelArrow.classList.remove("open");
+    }
 
     // Toggle open / collapse
     panelToggle.addEventListener("click", function () {
